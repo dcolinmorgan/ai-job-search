@@ -8,7 +8,7 @@ The salary lookup tool (`salary_lookup.py`) lets you benchmark company salaries 
 
 ## How it works
 
-The tool reads a `salary_data.json` file in the repo root containing company salary benchmarks. It uses fuzzy matching to find companies by name, handling Danish/Nordic characters, legal suffixes (A/S, ApS), and common spelling variations.
+The tool reads a `salary_data.json` file in the repo root containing company salary benchmarks. It uses fuzzy matching to find companies by name, handling Danish/Nordic characters, Swedish suffixes (AB), US/common legal suffixes (LLC, Inc., Corp.), and common spelling variations.
 
 The data format supports any index-based or absolute salary data. For example:
 - Index 100 = median salary, higher is better
@@ -22,10 +22,10 @@ The tool expects `salary_data.json` with this structure:
 ```json
 {
   "metadata": {
-    "source": "My Union Statistics 2025",
+    "source": "My Market Salary Data 2026",
     "index_baseline": 100,
     "index_label": "Index",
-    "baseline_description": "Index 100 = median salary for private sector"
+    "baseline_description": "Index 100 = market median for comparable roles"
   },
   "companies": [
     {
@@ -41,6 +41,20 @@ The tool expects `salary_data.json` with this structure:
       "city": "Fredericia",
       "categories": {
         "all_employees": { "count": 200, "index": 105.2 }
+      }
+    },
+    {
+      "company": "Spotify AB",
+      "city": "Stockholm",
+      "categories": {
+        "software_engineering": { "count": 80, "index": 110.0 }
+      }
+    },
+    {
+      "company": "Example Robotics, Inc.",
+      "city": "Boston",
+      "categories": {
+        "ml_engineering": { "count": 35, "index": 118.0 }
       }
     }
   ]
@@ -61,7 +75,7 @@ The tool expects `salary_data.json` with this structure:
 
 ### Option A: Create salary_data.json manually
 
-Create the file by hand with data from any source: union statistics, Glassdoor, salary surveys, networking, or personal research.
+Create the file by hand with data from any source: union statistics, Glassdoor, Levels.fyi, Swedish salary surveys, US salary bands, networking, or personal research.
 
 ### Option B: Convert from Excel
 
@@ -88,8 +102,8 @@ Start with an empty template and add companies as you research them:
   "metadata": {
     "source": "Personal research",
     "index_baseline": 0,
-    "index_label": "Monthly salary (DKK)",
-    "baseline_description": "Approximate monthly salary before tax"
+    "index_label": "Annual salary (USD)",
+    "baseline_description": "Approximate annual base salary before tax"
   },
   "companies": [
     {
@@ -109,6 +123,8 @@ Start with an empty template and add companies as you research them:
 ```bash
 python salary_lookup.py "Novo Nordisk"
 python salary_lookup.py "Ørsted" --city "Fredericia"
+python salary_lookup.py "Spotify" --city "Stockholm"
+python salary_lookup.py "Example Robotics LLC" --city "Boston"
 python salary_lookup.py "COWI" --json
 python salary_lookup.py --list-all
 ```
@@ -117,4 +133,5 @@ python salary_lookup.py --list-all
 
 - The data file (`salary_data.json`) is **excluded from git** (see `.gitignore`). Your salary data may be proprietary or confidential.
 - If the data file is missing, `salary_lookup.py` exits with a helpful error message and the `/apply` workflow skips the salary benchmark step.
-- The fuzzy matcher handles Danish company name variations: legal suffixes, Nordic characters, anglicized spellings, and partial matches.
+- The fuzzy matcher handles Danish, Swedish, and common US company name variations: legal suffixes, Nordic/accented characters, anglicized spellings, and partial matches.
+- Keep each salary dataset internally consistent. Do not mix annual USD, monthly SEK, and indexed DKK data in the same category unless the metadata makes the cadence and currency explicit.

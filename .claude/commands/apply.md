@@ -16,7 +16,7 @@ Follow these steps **exactly in order**. Do not skip steps.
 
 - If `$ARGUMENTS` looks like a URL, use `WebFetch` to retrieve the job posting content.
 - If it is pasted text, use it directly.
-- Extract: **company name**, **role title**, **department** (if mentioned), **location**, and **language** of the posting (Danish or English).
+- Extract: **company name**, **role title**, **department** (if mentioned), **location**, and **language** of the posting.
 - Determine the **target market** (`us`, `sweden`, `denmark`, or `other`) using the market-localization rules. Use posting location/work authorization first, then job-board domain, then the user's configured search markets. If remote eligibility is country-specific, that country is the market.
 - Store these for use throughout the workflow.
 
@@ -128,7 +128,7 @@ Use WebSearch and WebFetch to research:
 - Company culture and values
 
 ### 2. Read Reference Materials (content-critique only)
-Read these four files — and only these — to ground your critique:
+Read these files — and only these — to ground your critique:
 - `.claude/skills/job-application-assistant/01-candidate-profile.md`
 - `.claude/skills/job-application-assistant/02-behavioral-profile.md` — use this specifically to check whether the cover letter's voice matches the candidate's natural register. A "Collaborator" PI profile, for example, should not be given a combative, solo-hero tone; a "Persuader" profile should not be given over-hedged, apologetic phrasing.
 - `.claude/skills/job-application-assistant/03-writing-style.md`

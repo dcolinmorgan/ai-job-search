@@ -149,6 +149,31 @@ The font wrapper is mandatory — if you just move `\begin{itemize}` outside `\l
 - Adjust date format to local convention
 - Adjust closing to local convention (e.g. "Med venlig hilsen," for Danish)
 
+## Market-Specific Conventions
+
+Read `08-market-localization.md` before writing.
+
+### United States
+
+- Use US English.
+- Salutation: "Dear Hiring Manager," or "Dear [Company] hiring team," when no named contact is available.
+- Closing: "Sincerely," or "Best regards,".
+- Tone: direct, evidence-led, and specific about role/company fit. Avoid generic passion statements and overlong personal narrative.
+- Do not mention work authorization, citizenship, relocation, or salary unless the posting requires it or the user explicitly asks.
+
+### Sweden
+
+- Match the posting language. Use Swedish for Swedish-language postings unless the user asks for English.
+- Salutation: "Hej [Name]," or "Hej [Company/team],".
+- Closing: "Vanliga halsningar," or "Med vanliga halsningar,". Use Swedish diacritics if the document already uses them.
+- Tone: warm, concrete, collaborative, and modestly confident. Avoid US-style exaggeration.
+- Address Swedish language ability or relocation only if the profile supports it and the posting makes it relevant.
+
+### Denmark
+
+- Preserve the existing Danish convention for Danish-language postings.
+- Closing: "Med venlig hilsen,".
+
 ## Checklist Before Finalizing
 - [ ] No em-dashes (use commas or periods instead)
 - [ ] No cliches or empty filler

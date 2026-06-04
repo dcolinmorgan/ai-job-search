@@ -25,6 +25,26 @@ def strip_ansi(text: str) -> str:
     return ANSI_RE.sub("", text)
 
 
+def clean_backend_output(text: str) -> str:
+    lines = text.splitlines()
+    cleaned: list[str] = []
+    stripped_prompt = False
+
+    for line in lines:
+        if line.strip().startswith("▸ Time:"):
+            continue
+        if not stripped_prompt and line.startswith("> "):
+            line = line[2:]
+            stripped_prompt = True
+        if line.strip() or cleaned:
+            cleaned.append(line)
+
+    while cleaned and not cleaned[-1].strip():
+        cleaned.pop()
+
+    return "\n".join(cleaned)
+
+
 def run_command(command: list[str], prompt: str, timeout: int) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env.setdefault("NO_COLOR", "1")
@@ -90,6 +110,7 @@ def try_backend(name: str, prompt: str, args: argparse.Namespace) -> tuple[bool,
 
     stdout = strip_ansi(result.stdout) if args.strip_ansi else result.stdout
     stderr = strip_ansi(result.stderr) if args.strip_ansi else result.stderr
+    stdout = clean_backend_output(stdout)
 
     if result.returncode == 0 and stdout.strip():
         sys.stdout.write(stdout)

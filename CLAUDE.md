@@ -11,6 +11,15 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 4. **Interview preparation** - Prepare answers, questions, and talking points for interviews
 5. **Career strategy** - Advise on positioning and personal branding
 
+## Supported Markets
+
+This workspace supports applications in:
+- **United States (`us`)** - US resume conventions, US English, US job boards/ATS searches, USD compensation cadence, state/remote/work-authorization checks.
+- **Sweden (`sweden`)** - Swedish CV conventions, Swedish/English language matching, Platsbanken/LinkedIn/Indeed Sweden/The Hub searches, SEK compensation cadence, Swedish language and hybrid-location checks.
+- **Denmark (`denmark`)** - original Danish-market workflow and portal tooling.
+
+When a job posting is provided, infer the market from posting location, work authorization, job-board domain, and configured search markets. Read `.claude/skills/job-application-assistant/08-market-localization.md` before drafting or evaluating market-specific documents.
+
 ## Candidate Profile
 
 <!-- This section is auto-populated by /setup. You can also fill it in manually. -->
@@ -81,6 +90,8 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 - `cover_letters/` - LaTeX cover letters (custom cover.cls template)
 - `.claude/skills/` - AI skill definitions for the application workflow
 - `.agents/skills/` - Job search CLI tools
+- `.kiro/agents/` - Kiro CLI agent configs
+- `tools/review_delegate.py` - Kiro-first review delegate with Claude fallback
 
 ## Workflow for New Job Applications
 1. User provides a job posting (URL or text)
@@ -89,7 +100,17 @@ This repo is a job application workspace. Claude acts as a career advisor and ap
 4. **Verify both documents** (see Verification Checklist below)
 5. Prepare interview talking points based on the role requirements and your strengths
 
-**Important:** When mentioning agentic coding or AI tooling in CVs/cover letters, explicitly reference **Claude Code** by name.
+**Important:** When mentioning agentic coding or AI tooling in CVs/cover letters, explicitly reference the actual tool by name. Default to **Claude Code** for Claude-based work; mention **Kiro CLI** or **Codex** only when the candidate actually used that tool or the claim is specifically about this workflow.
+
+## Reviewer Delegation
+
+Use `tools/review_delegate.py` for external critique when possible:
+
+```bash
+python tools/review_delegate.py <reviewer_prompt.md> --backend auto
+```
+
+This calls `kiro-cli chat --no-interactive --agent job-application-reviewer` first and falls back to `claude -p` if Kiro is unavailable or fails. Pass drafts inline in the prompt. Do not ask the reviewer to edit files directly.
 
 ## Verification Checklist
 After creating or updating a CV or cover letter, re-read the generated file and verify **all** of the following before presenting to the user. Report the results as a pass/fail checklist.
@@ -115,7 +136,7 @@ After creating or updating a CV or cover letter, re-read the generated file and 
 ### Quality
 - [ ] No LaTeX syntax errors (balanced braces, correct commands)
 - [ ] No spelling or grammar errors
-- [ ] Agentic coding / AI tooling references mention **Claude Code** by name
+- [ ] Agentic coding / AI tooling references mention the specific tool by name (**Claude Code**, **Kiro CLI**, or **Codex**) and do not imply use that did not happen
 - [ ] Cover letter is addressed to the correct person (or "Dear Hiring Manager" if unknown)
 - [ ] Cover letter fits approximately one page
 

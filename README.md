@@ -4,11 +4,11 @@
 
 # AI Job Search
 
-An AI-powered job application framework built on [Claude Code](https://claude.com/claude-code). Fork it, fill in your profile, and let Claude evaluate job postings, tailor your CV, write cover letters, and prepare you for interviews.
+An AI-powered job application framework for Codex, Claude Code, and Kiro CLI workflows. Fork it, fill in your profile, and let the assistant evaluate job postings, tailor your CV/resume, write cover letters, and prepare you for interviews.
 
 ## What this is
 
-A structured workflow that turns Claude Code into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The job portal search skills are built for the Danish market (Jobindex, Jobnet, Akademikernes Jobbank, etc.), but the pattern is designed to be swapped for your local job boards.
+A structured workflow that turns an AI coding assistant into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-aware**. It now includes market guidance for the **United States**, **Sweden**, and the original **Danish** workflow.
 
 ```
 /setup          /scrape              /apply <url>
@@ -26,13 +26,16 @@ files ready    with fit ratings     (LaTeX, tailored)
                -> /apply            -> Revise -> Final output
 ```
 
-The framework encodes career guidance best practices, including structured evaluation criteria, forward-looking cover letter framing, and optional salary benchmarking.
+The framework encodes career guidance best practices, including structured evaluation criteria, market-specific document conventions, forward-looking cover letter framing, Kiro/Claude reviewer delegation, and optional salary benchmarking.
 
 ## Prerequisites
 
-- [Claude Code](https://claude.com/claude-code) (CLI)
+- One AI coding assistant CLI:
+  - [Claude Code](https://claude.com/claude-code) for the original command workflow
+  - Codex for AGENTS.md-driven workflows
+  - Kiro CLI for reviewer delegation via `tools/review_delegate.py`
 - Python 3.10+
-- [Bun](https://bun.sh) (for Danish job search CLI tools)
+- [Bun](https://bun.sh) (for the Danish job search CLI tools)
 - LaTeX distribution with `lualatex` and `xelatex`: [TeX Live](https://tug.org/texlive/) or [MiKTeX](https://miktex.org/). The CV compiles with `lualatex` (pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors); the cover letter compiles with `xelatex` because `cover.cls` requires `fontspec`.
 
 ## Quick start
@@ -69,7 +72,7 @@ claude
 /scrape
 ```
 
-This searches multiple job portals for positions matching your profile, deduplicates results, and presents them sorted by fit. Pick a match to run `/apply` on it directly.
+This searches configured markets for positions matching your profile, deduplicates results, and presents them sorted by fit. Denmark can use the included portal CLIs. US and Sweden searches use WebSearch/site-query patterns for LinkedIn, Indeed, USAJOBS, Arbetsformedlingen/Platsbanken, The Hub, direct ATS pages, and other configured sources. Pick a match to run `/apply` on it directly.
 
 ### 5. Apply to a job
 
@@ -84,6 +87,8 @@ If the URL can't be fetched (some job portals block automated access), you can p
 ```
 
 This runs the full workflow: evaluate fit, draft CV + cover letter, review with a second agent, revise, and present the final output.
+
+For US roles, the workflow applies US resume conventions and checks state/remote/work-authorization constraints. For Swedish roles, it applies Swedish CV/cover-letter conventions and checks language, hybrid location, and SEK compensation cadence.
 
 ## Other commands
 
@@ -114,10 +119,14 @@ ai-job-search/
 │   │   │   ├── 04-job-evaluation.md   # Scoring framework for job fit
 │   │   │   ├── 05-cv-templates.md     # LaTeX CV structure + tailoring rules
 │   │   │   ├── 06-cover-letter-templates.md # LaTeX cover letter templates
-│   │   │   └── 07-interview-prep.md   # STAR examples + interview framework
+│   │   │   ├── 07-interview-prep.md   # STAR examples + interview framework
+│   │   │   └── 08-market-localization.md # US, Sweden, Denmark market conventions
 │   │   ├── job-scraper/               # Job search orchestration
 │   │   └── upskill/                   # /upskill skill gap analysis and learning plan
 │   └── settings.local.json            # Claude Code permissions
+├── .kiro/
+│   └── agents/
+│       └── job-application-reviewer.json # Kiro CLI reviewer profile
 ├── .agents/skills/                    # Job portal CLI tools (Denmark)
 │   ├── jobbank-search/                # Akademikernes Jobbank
 │   ├── jobdanmark-search/             # Jobdanmark.dk
@@ -138,6 +147,7 @@ ai-job-search/
 ├── salary_lookup.py                   # Salary benchmarking tool (BYO data)
 ├── tools/
 │   ├── convert_salary_excel.py        # Convert salary Excel to JSON
+│   ├── review_delegate.py             # Kiro-first reviewer runner with Claude fallback
 │   └── README_SALARY_TOOL.md          # Salary tool setup instructions
 ├── job_scraper/                       # Scraper state (seen jobs, results)
 ├── upskill/                           # /upskill report output (markdown reports per run)
@@ -152,9 +162,9 @@ The `/apply` command runs a **drafter-reviewer workflow** with mandatory PDF com
 1. **Parse** the job posting (URL or text)
 2. **Evaluate fit** against your profile (skills, experience, culture, location, career alignment)
 3. **Draft** a tailored CV and cover letter in LaTeX
-4. **Spawn a reviewer agent** that researches the company and critiques the drafts
+4. **Run a reviewer delegate** through `tools/review_delegate.py`, which calls Kiro CLI first and falls back to Claude if needed
 5. **Revise** based on the reviewer's feedback
-6. **Compile and inspect** both PDFs: lualatex for the CV, xelatex for the cover letter. Claude reads the rendered pages and iterates on the LaTeX until the CV is exactly 2 pages with no orphaned entry titles, and the cover letter is exactly 1 page with the signature visible and fonts consistent.
+6. **Compile and inspect** both PDFs: lualatex for the CV, xelatex for the cover letter. The assistant reads the rendered pages and iterates on the LaTeX until the CV is exactly 2 pages with no orphaned entry titles, and the cover letter is exactly 1 page with the signature visible and fonts consistent.
 7. **Present** the final output with a verification checklist
 
 All claims in the CV and cover letter are verified against your actual profile. The system never fabricates skills or experience.
@@ -163,7 +173,7 @@ All claims in the CV and cover letter are verified against your actual profile. 
 
 - **PDF verification loop.** Most LaTeX-resume templates produce "looks fine in the .tex" output that breaks in the PDF: job titles orphan to the next page, cover letters spill onto page 2, bullet fonts silently fall back to the body font. The `/apply` command compiles and visually inspects every PDF and applies targeted fixes (`\needspace`, `\enlargethispage`, font-matching wrappers for list items) until the layout is clean. This runs automatically on every application.
 - **Relevance-weighted CV cutting.** When a CV overflows 2 pages, the workflow does not cut mechanically from the "oldest" section. It scores each candidate line by (a) relevance to the target posting, (b) uniqueness in the document, and (c) whether the cover letter depends on it, and cuts the lowest-total-score line first. An older-role bullet that hits posting keywords survives ahead of a recent-role bullet that does not.
-- **Drafter-reviewer separation.** The drafter writes; a second Claude agent, spawned with a fresh context, researches the company and critiques the drafts. The drafter then revises. This catches missed keywords, weak framing, and generic language that a single pass often leaves in.
+- **Drafter-reviewer separation.** The drafter writes; a second reviewer gets a fresh context through Kiro CLI first, with Claude available as fallback. The reviewer critiques the drafts, then the drafter revises. This catches missed keywords, weak framing, and generic language that a single pass often leaves in.
 - **Token-efficient reviewer dispatch.** The reviewer agent receives drafts inline rather than re-reading them, and the verification checklist runs once at the end of the workflow rather than being duplicated by both agents. Note: the new compile-and-inspect step in Step 5 spends some of those savings on PDF rendering and layout iteration — the workflow trades some end-to-end token cost for a real reduction in broken PDFs reaching the user.
 
 ## Customization
@@ -196,9 +206,19 @@ This re-runs the search configuration interview: which roles to target, which sk
 
 The CV uses [moderncv](https://ctan.org/pkg/moderncv) (banking style). The cover letter uses a custom `cover.cls` with Lato/Raleway fonts. You can replace these with your own templates; just update the guidance in `05-cv-templates.md` and `06-cover-letter-templates.md`.
 
-### Job search tools
+### Job search markets
 
-The four CLI tools in `.agents/skills/` are specific to the **Danish job market** (Jobbank, Jobdanmark, Jobindex, Jobnet). They demonstrate the pattern for building job portal integrations. If you're in a different country, you can build equivalent tools for your local job portals using the same structure.
+The four TypeScript CLI tools in `.agents/skills/` remain specific to the **Danish job market** (Jobbank, Jobdanmark, Jobindex, Jobnet). US and Sweden support is handled through market-specific query blocks in `.claude/skills/job-scraper/search-queries.md` and conventions in `.claude/skills/job-application-assistant/08-market-localization.md`. You can still build equivalent local portal integrations using the Danish tools as the pattern.
+
+### Reviewer backend
+
+The application workflow prefers Kiro CLI for external critique:
+
+```bash
+python tools/review_delegate.py job_scraper/reviewer_prompt_example.md --backend auto
+```
+
+`--backend auto` runs `kiro-cli chat --no-interactive --agent job-application-reviewer` first and falls back to `claude -p` if Kiro fails. Add `--backend claude` to force Claude, or `--backend kiro` to require Kiro.
 
 ### Salary benchmarking
 
@@ -238,7 +258,7 @@ To get the most from this, invest time during `/setup` in describing not just yo
 ## Acknowledgements
 
 - [Mikkel Krogholm](https://github.com/mikkelkrogsholm) ([skills repo](https://github.com/mikkelkrogsholm/skills)) for the job search CLI skills
-- Built with [Claude Code](https://claude.com/claude-code) by [Anthropic](https://anthropic.com)
+- Built for Claude Code, Codex, and Kiro CLI workflows.
 
 ## License
 

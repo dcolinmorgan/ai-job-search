@@ -96,7 +96,7 @@ Found X new positions (Y high, Z medium, W low match).
 
 | # | Fit | Market | Title | Company | Location | Deadline | URL |
 |---|-----|--------|-------|---------|----------|----------|-----|
-| 1 | High | ... | ... | ... | ... | [Link](...) |
+| 1 | High | us | Senior ML Engineer | Example Corp | Boston, MA | 2026-06-30 | [Link](...) |
 
 ### High-Match Highlights
 For each high-match job, add 2-3 bullet points:

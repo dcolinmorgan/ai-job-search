@@ -26,18 +26,30 @@ from pathlib import Path
 
 DATA_FILE = Path(__file__).parent / "salary_data.json"
 
-# Common Danish <-> anglicized spelling variants
+# Common Nordic and accented spelling variants
 SPELLING_VARIANTS = {
     "ø": "o", "æ": "ae", "å": "aa",
     "ö": "o", "ä": "ae", "ü": "u",
+    "é": "e", "è": "e", "á": "a", "à": "a",
 }
 
 # Legal suffixes and noise to strip when matching company names
 STRIP_PATTERNS = [
+    # Denmark
     r"\ba/s\b", r"\baps\b", r"\bi/s\b", r"\bp/s\b", r"\bk/s\b",
     r"\bivs\b", r"\bamba\b", r"\ba\.m\.b\.a\.\b",
+    # Sweden
+    r"\bab\b", r"\baktiebolag\b", r"\bhb\b", r"\bhandelsbolag\b",
+    r"\bkb\b", r"\bkommanditbolag\b",
+    # United States and common international suffixes
+    r"\binc\b", r"\binc\.\b", r"\bincorporated\b", r"\bllc\b",
+    r"\bl\.l\.c\.\b", r"\bcorp\b", r"\bcorp\.\b", r"\bcorporation\b",
+    r"\bco\b", r"\bco\.\b", r"\bcompany\b", r"\bltd\b", r"\bltd\.\b",
+    r"\blimited\b", r"\bplc\b", r"\bllp\b", r"\blp\b", r"\bpbc\b",
     r"\(vg\)", r"\(.*?\)",  # (VG) and other parentheticals
     r"\bdanmark\b", r"\bdenmark\b", r"\bscandinavia\b", r"\bnordic\b",
+    r"\bsverige\b", r"\bsweden\b", r"\busa\b", r"\bu\.s\.a\.\b",
+    r"\bunited states\b", r"\bamerica\b", r"\bamericas\b",
     r"\bgroup\b", r"\bholding\b",
     r",\s*.*$",  # everything after comma (sub-entities)
 ]
@@ -261,7 +273,7 @@ def main():
         if args.city:
             print(f"  (filtered by city: {args.city})")
         print("\nTry a shorter or different name. Company names in the dataset")
-        print("may include legal suffixes like 'A/S' or 'ApS'.")
+        print("may include legal suffixes like 'A/S', 'AB', 'LLC', or 'Inc.'.")
         sys.exit(1)
 
     if args.json:
