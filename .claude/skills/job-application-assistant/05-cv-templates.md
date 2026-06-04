@@ -10,6 +10,32 @@ All CVs use the moderncv LaTeX package with the "banking" style and "blue" color
 **Compile with:** **lualatex** on MiKTeX/TeX Live. pdflatex often fails on modern MiKTeX installs with `fontawesome5` font-expansion errors; lualatex handles the same sources cleanly.
 **Master reference:** `cv/main_example.tex` (comprehensive CV with all competencies, experience, and achievements - use as source when building targeted CVs)
 
+## Market-Specific Document Rules
+
+Read `08-market-localization.md` before generating a targeted file.
+
+### United States
+
+- Refer to the document as a resume in user-facing output, while keeping the repo filename convention `cv/main_<company>.tex`.
+- Use US English and prefer `letterpaper` in the document class for US-targeted PDFs.
+- Omit photo, age, date of birth, marital status, nationality, full street address, and references.
+- Use city/state rather than a full address unless the user explicitly wants otherwise.
+- Keep bullets concise and achievement-oriented, with metrics, scope, tools, and outcomes where factual.
+- The default repo verification still requires exactly 2 pages. If the user later changes that rule for US resumes, prefer 1 page for early-career profiles and 2 pages for technical/academic depth.
+
+### Sweden
+
+- "CV" is standard. English is common for international technical roles; Swedish may be appropriate for Swedish-language postings.
+- Do not include Swedish personal identity number, marital status, age, or photo by default.
+- Include language proficiency and work authorization only when factual and useful.
+- Emphasize practical ownership, collaboration, and team fit alongside achievements.
+- Keep the CV concise, usually 1-2 pages. The default repo verification still requires exactly 2 pages unless changed by the user.
+
+### Denmark
+
+- Preserve the original CV pattern unless the posting or user asks otherwise.
+- English CVs are acceptable for many technical roles; use Danish only when the market/posting calls for it.
+
 ### Compile command
 
 ```bash

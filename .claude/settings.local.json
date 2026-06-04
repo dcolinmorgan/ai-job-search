@@ -5,7 +5,9 @@
       "Bash(python3:*)",
       "Bash(python:*)",
       "Bash(curl:*)",
-      "Bash(bun:*)"
+      "Bash(bun:*)",
+      "Bash(kiro-cli:*)",
+      "Bash(claude:*)"
     ]
   }
 }

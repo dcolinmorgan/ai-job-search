@@ -13,6 +13,7 @@ When the user provides a job posting (URL or text), follow this workflow:
 ### Step 1: Research & Evaluate Fit
 - Fetch the job posting content (use WebFetch for URLs)
 - Analyze the posting for required competencies, keywords, and priorities
+- Detect the target market (`us`, `sweden`, `denmark`, or `other`) using `08-market-localization.md`
 - Research the company (website, LinkedIn, mission, recent news)
 - Score the posting against the candidate's profile using the framework in `04-job-evaluation.md`
 - Present the evaluation table and verdict
@@ -22,12 +23,14 @@ When the user provides a job posting (URL or text), follow this workflow:
 ### Step 2: Tailor CV
 - Read the most relevant existing CV variant from `cv/` as a starting point
 - Follow the guidelines in `05-cv-templates.md`
+- Apply market conventions from `08-market-localization.md` (US resume conventions, Swedish CV/language conventions, or Danish defaults)
 - Create `cv/main_<company>.tex` with tailored content
 - Adjust: profile statement, skills section, experience bullet emphasis, section order
 
 ### Step 3: Write Cover Letter
 - Follow the writing style rules in `03-writing-style.md` (critical: no em-dashes, no cliches)
 - Follow the template structure in `06-cover-letter-templates.md`
+- Match the posting language and local salutation/closing conventions from `08-market-localization.md`
 - Create `cover_letters/cover_<company>_<role>.tex`
 - Ensure the letter connects specific experience to the role requirements
 
@@ -50,6 +53,7 @@ When the user provides a job posting (URL or text), follow this workflow:
 | `05-cv-templates.md` | LaTeX CV structure and tailoring rules |
 | `06-cover-letter-templates.md` | LaTeX cover letter structure and tailoring rules |
 | `07-interview-prep.md` | STAR examples, tough questions, roleplay guidelines |
+| `08-market-localization.md` | US, Sweden, Denmark, and custom-market search/document conventions |
 
 ---
 

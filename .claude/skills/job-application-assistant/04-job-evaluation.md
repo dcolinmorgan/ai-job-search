@@ -51,6 +51,11 @@ Does the role and company culture match the behavioral profile?
 - Remote with occasional office: PASS
 - Requires relocation: FAIL (deal-breaker)
 - Frequent international travel: FLAG (discuss with user)
+- Market/work authorization mismatch: FAIL unless the profile explicitly supports it
+- US-only state, timezone, clearance, or sponsorship limits: FLAG or FAIL depending on candidate fit
+- Swedish-language requirement: FLAG if Swedish is preferred, FAIL if Swedish is required and the profile does not support it
+
+**Market conventions:** Read `08-market-localization.md` before evaluating location/logistics. Record the target market (`us`, `sweden`, `denmark`, or `other`) in the evaluation notes.
 
 ### 5. Career Alignment & Motivation (0-100)
 Does this role advance career goals and contain tasks that energize?
@@ -129,7 +134,7 @@ Present the evaluation as:
 
 ### Company Research Checklist
 - [ ] Checked company website (mission, values, recent news)
-- [ ] Checked review sites (Glassdoor, Jobindex, etc.)
+- [ ] Checked market-relevant review and salary sites (US: Glassdoor/Levels.fyi/Blind when relevant; Sweden: Glassdoor, union/salary survey data if provided, Arbetsformedlingen context; Denmark: Glassdoor/Jobindex)
 - [ ] Checked LinkedIn for team size, recent hires, connections
 - [ ] Checked media for restructuring, growth, or workplace issues
 - [ ] Identified network contacts who may know the team/manager
@@ -171,3 +176,22 @@ Before writing the application, consider whether the candidate should call the c
 - The call's purpose is **gathering information**, not delivering a pitch
 - Take notes - use what you learn to tailor the application
 - Reference the conversation naturally in the cover letter ("After speaking with [name], I was especially drawn to...")
+
+## Market-Specific Checks
+
+Apply these checks after the core scoring:
+
+### United States
+- Confirm whether the role is open to the candidate's state/location and timezone.
+- Check work authorization, sponsorship, and clearance requirements exactly as written.
+- Treat compensation as annual USD unless the posting or salary data says otherwise.
+- For federal jobs, check USAJOBS eligibility, specialized experience, questionnaire language, transcripts, and supporting-document requirements.
+
+### Sweden
+- Check whether Swedish language proficiency is required or preferred.
+- Confirm city/hybrid expectations and commute feasibility.
+- Treat compensation as SEK monthly or annual based on the available data, and do not mix cadences.
+- If the candidate has international education or experience, explain relevance clearly without claiming Swedish equivalence unless verified.
+
+### Denmark
+- Preserve the original Danish-market checks for commute, Danish/English posting language, and Jobindex/Jobnet/company research.

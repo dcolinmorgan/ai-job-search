@@ -1,70 +1,162 @@
 # Search Queries for Job Scraper
 
-<!-- SETUP: Customize these queries based on your skills, target roles, and location -->
+<!-- SETUP: Customize these queries based on your skills, target roles, markets, and location -->
 
-## Search Sites
+## Target Markets
 
-Primary (Danish job market):
-- **jobindex.dk** - largest Danish job board
-- **linkedin.com/jobs** - LinkedIn job listings (filter: Denmark / your city)
-- **karriere.dk** - IDA's job board (engineering/science roles)
-- **jobfinder.dk** - another major Danish job board
-- **akademikernes.dk** - academic union job board
+Priority order:
+1. `[PRIMARY_MARKET: us | sweden | denmark | other]`
+2. `[SECONDARY_MARKET_OPTIONAL]`
 
-Secondary (company career pages via Google):
-- Direct Google searches with `site:` filters for known target companies
+Supported market guidance lives in `.claude/skills/job-application-assistant/08-market-localization.md`.
 
-## Query Categories
+## Candidate Search Inputs
 
-Queries are grouped by priority. Each query should be combined with your location terms (e.g. "Copenhagen", "Sjælland", "Hovedstaden") where the site supports it.
+- **Primary role type:** `[YOUR_PRIMARY_ROLE_TYPE]`
+- **Primary job titles:** `[YOUR_PRIMARY_JOB_TITLE_1]`, `[YOUR_PRIMARY_JOB_TITLE_2]`
+- **Adjacent titles:** `[YOUR_ADJACENT_TITLE_1]`, `[YOUR_ADJACENT_TITLE_2]`
+- **Key skills:** `[YOUR_KEY_SKILL_1]`, `[YOUR_KEY_SKILL_2]`, `[YOUR_KEY_SKILL_3]`
+- **Domain keywords:** `[YOUR_DOMAIN_KEYWORD_1]`, `[YOUR_DOMAIN_KEYWORD_2]`
+- **Target companies:** `[TARGET_COMPANY_1]`, `[TARGET_COMPANY_2]`
 
-### Priority 1: [YOUR_PRIMARY_ROLE_TYPE]
+## Market: United States (`us`)
 
-These match your strongest and most desired career direction.
+Use these when US is a target market. Combine city/state/remote terms where relevant.
 
+### Sites
+
+- LinkedIn Jobs
+- Indeed
+- Google Jobs / direct company career pages
+- Built In, Dice, Wellfound, or other role-specific boards
+- USAJOBS for federal roles
+- Greenhouse, Lever, Workday, Ashby, and other ATS domains for direct postings
+
+### Priority 1: Core Role
+
+```text
+site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_CITY]" "[YOUR_STATE]"
+site:indeed.com "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_KEY_SKILL_1]" "[YOUR_CITY]"
+site:greenhouse.io "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_KEY_SKILL_1]" "[YOUR_STATE]"
+site:lever.co "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_DOMAIN_KEYWORD_1]" remote
 ```
+
+### Priority 2: Domain / Sector
+
+```text
+site:linkedin.com/jobs "[YOUR_DOMAIN_KEYWORD_1]" "[YOUR_KEY_SKILL_1]" "United States"
+site:indeed.com "[YOUR_DOMAIN_KEYWORD_2]" "[YOUR_PRIMARY_JOB_TITLE_2]" "[YOUR_STATE]"
+site:ashbyhq.com "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_DOMAIN_KEYWORD_1]"
+```
+
+### Priority 3: Adjacent Roles
+
+```text
+site:linkedin.com/jobs "[YOUR_ADJACENT_TITLE_1]" "[YOUR_KEY_SKILL_1]" "[YOUR_CITY]"
+site:indeed.com "[YOUR_ADJACENT_TITLE_2]" "[YOUR_KEY_SKILL_2]" remote
+site:wellfound.com/jobs "[YOUR_ADJACENT_TITLE_1]" "[YOUR_KEY_SKILL_1]" remote
+```
+
+### Public Sector / Regulated Roles
+
+```text
+site:usajobs.gov "[YOUR_PRIMARY_JOB_TITLE_1]" "[YOUR_KEY_SKILL_1]"
+site:usajobs.gov "[YOUR_DOMAIN_KEYWORD_1]" "[YOUR_STATE]"
+```
+
+## Market: Sweden (`sweden`)
+
+Use these when Sweden is a target market. Include both English and Swedish title variants when useful.
+
+### Sites
+
+- Arbetsformedlingen / Platsbanken
+- LinkedIn Jobs
+- Indeed Sweden
+- The Hub for Nordic startup roles
+- Academic Work, Jobbsafari, Ingenjorsjobb, or sector-specific boards
+- Direct company career pages
+
+### Priority 1: Core Role
+
+```text
+site:arbetsformedlingen.se/platsbanken "[YOUR_PRIMARY_JOB_TITLE_SWEDISH]" "[YOUR_CITY]"
+site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE_ENGLISH]" Sweden "[YOUR_CITY]"
+site:se.indeed.com "[YOUR_PRIMARY_JOB_TITLE_ENGLISH]" "[YOUR_KEY_SKILL_1]" "[YOUR_CITY]"
+site:thehub.io/jobs "[YOUR_PRIMARY_JOB_TITLE_ENGLISH]" Sweden
+```
+
+### Priority 2: Domain / Sector
+
+```text
+site:arbetsformedlingen.se/platsbanken "[YOUR_DOMAIN_KEYWORD_1]" "[YOUR_CITY]" 
+site:linkedin.com/jobs "[YOUR_DOMAIN_KEYWORD_1]" "[YOUR_KEY_SKILL_1]" Sweden
+site:se.indeed.com "[YOUR_DOMAIN_KEYWORD_2]" "[YOUR_PRIMARY_JOB_TITLE_SWEDISH]"
+```
+
+### Priority 3: Adjacent Roles
+
+```text
+site:linkedin.com/jobs "[YOUR_ADJACENT_TITLE_1]" "[YOUR_KEY_SKILL_1]" Sweden
+site:arbetsformedlingen.se/platsbanken "[YOUR_ADJACENT_TITLE_2_SWEDISH]" "[YOUR_CITY]"
+site:thehub.io/jobs "[YOUR_ADJACENT_TITLE_1]" "[YOUR_KEY_SKILL_2]" Sweden
+```
+
+## Market: Denmark (`denmark`)
+
+Use these when Denmark is a target market or when preserving the original workflow.
+
+### Sites
+
+- Jobindex
+- Jobnet
+- Akademikernes Jobbank
+- Jobdanmark
+- LinkedIn Jobs
+- IDA / Karriere and sector-specific boards
+
+### Priority 1: Core Role
+
+```text
 site:jobindex.dk "[YOUR_PRIMARY_JOB_TITLE]" [YOUR_CITY]
-site:jobindex.dk "[YOUR_KEY_SKILL]" [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE]" [YOUR_COUNTRY]
+site:jobindex.dk "[YOUR_KEY_SKILL_1]" [YOUR_CITY]
+site:linkedin.com/jobs "[YOUR_PRIMARY_JOB_TITLE]" Denmark [YOUR_CITY]
 ```
 
-### Priority 2: [YOUR_DOMAIN_EXPERTISE]
+### Priority 2: Domain / Sector
 
-These match your domain expertise.
-
-```
+```text
 site:jobindex.dk [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] OR [YOUR_REGION]
-site:jobindex.dk [YOUR_DOMAIN_KEYWORD_2] [YOUR_COUNTRY]
-site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] [YOUR_COUNTRY]
+site:jobindex.dk [YOUR_DOMAIN_KEYWORD_2] Denmark
+site:linkedin.com/jobs [YOUR_DOMAIN_KEYWORD_1] [YOUR_CITY] Denmark
 ```
 
-### Priority 3: [YOUR_ADJACENT_ROLE_TYPE]
+### Priority 3: Adjacent Roles
 
-Adjacent roles you could pivot into.
-
-```
-site:jobindex.dk "[YOUR_ADJACENT_TITLE_1]" [YOUR_KEY_SKILL] [YOUR_CITY]
-site:jobindex.dk "[YOUR_ADJACENT_TITLE_2]" [YOUR_KEY_SKILL] [YOUR_CITY]
+```text
+site:jobindex.dk "[YOUR_ADJACENT_TITLE_1]" [YOUR_KEY_SKILL_1] [YOUR_CITY]
+site:jobindex.dk "[YOUR_ADJACENT_TITLE_2]" [YOUR_KEY_SKILL_2] [YOUR_CITY]
 ```
 
-### Priority 4: Broader Technical / Consulting
+## Custom Company / ATS Searches
 
-Wider net for general technical roles.
+Use these for any market when target companies are known:
 
-```
-site:jobindex.dk [YOUR_KEY_SKILL] developer [YOUR_CITY]
-site:linkedin.com/jobs "[YOUR_KEY_SKILL] developer" [YOUR_CITY]
-site:jobindex.dk "technical consultant" [YOUR_DOMAIN] [YOUR_CITY]
+```text
+site:[TARGET_COMPANY_DOMAIN] careers "[YOUR_PRIMARY_JOB_TITLE_1]"
+site:greenhouse.io "[TARGET_COMPANY_1]" "[YOUR_PRIMARY_JOB_TITLE_1]"
+site:lever.co "[TARGET_COMPANY_1]" "[YOUR_PRIMARY_JOB_TITLE_1]"
+site:workdayjobs.com "[TARGET_COMPANY_1]" "[YOUR_KEY_SKILL_1]"
 ```
 
 ## Location Filter
 
-When evaluating results, verify the job location is within reasonable commute distance from your home. Define acceptable areas:
-- [YOUR_CITY] and surrounding areas
-- [ACCEPTABLE_AREA_1]
-- [ACCEPTABLE_AREA_2]
-- [BORDERLINE_AREA] (borderline - ~X min by transit)
-- [TOO_FAR_AREA] (too far)
+When evaluating results, verify the job location is within reasonable commute distance and compatible with work authorization or remote constraints.
+
+- **Ideal:** `[YOUR_CITY]`, `[YOUR_STATE_OR_REGION]`, remote roles explicitly open to `[YOUR_MARKET]`
+- **Acceptable:** `[ACCEPTABLE_AREA_1]`, `[ACCEPTABLE_AREA_2]`
+- **Borderline:** `[BORDERLINE_AREA]` (borderline - ~X min by transit or timezone friction)
+- **Too far:** `[TOO_FAR_AREA]` (too far, relocation required, or remote not available in the candidate's market)
 
 ## Date Filter
 
@@ -72,5 +164,9 @@ Only include jobs posted within the last 14 days, or with an application deadlin
 
 ## Adapting Queries
 
-If the user specifies a focus area, select queries from the matching category and also generate 2-3 custom queries for that focus. For example:
-- "/scrape [focus_area]" -> relevant category queries + custom focus-specific queries
+If the user specifies a focus area, select queries from the matching category and generate 2-3 custom queries for that focus.
+
+Examples:
+- `/scrape data science us` -> US core role + US domain queries
+- `/scrape sweden` -> Sweden market queries with Swedish/English title variants
+- `/scrape broad` -> all configured market blocks

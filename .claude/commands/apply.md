@@ -6,7 +6,7 @@ Follow these steps **exactly in order**. Do not skip steps.
 
 **Token-efficiency rules for this workflow:**
 - Never re-Read a file whose contents are already in your context from an earlier step. If you read it in Step 1, it is still available in Step 2.
-- When dispatching the reviewer agent, pass draft content **inline in the agent prompt** rather than asking the agent to Read files you already have in memory.
+- When dispatching the reviewer agent, pass draft content **inline in the reviewer prompt** rather than asking the delegate to Read files you already have in memory.
 - Run the full verification checklist exactly once, at the end (Step 6). The reviewer focuses on content critique, not verification.
 - Step 5 (compile and inspect PDFs) is mandatory and non-skippable — LaTeX page-break decisions are unpredictable, and `.tex` files that look fine often produce broken PDFs (orphaned entry titles, cover letters spilling to page 2, bullet fonts mismatching).
 
@@ -17,6 +17,7 @@ Follow these steps **exactly in order**. Do not skip steps.
 - If `$ARGUMENTS` looks like a URL, use `WebFetch` to retrieve the job posting content.
 - If it is pasted text, use it directly.
 - Extract: **company name**, **role title**, **department** (if mentioned), **location**, and **language** of the posting (Danish or English).
+- Determine the **target market** (`us`, `sweden`, `denmark`, or `other`) using the market-localization rules. Use posting location/work authorization first, then job-board domain, then the user's configured search markets. If remote eligibility is country-specific, that country is the market.
 - Store these for use throughout the workflow.
 
 ---
@@ -26,6 +27,7 @@ Follow these steps **exactly in order**. Do not skip steps.
 Read the evaluation framework:
 - `.claude/skills/job-application-assistant/04-job-evaluation.md`
 - `.claude/skills/job-application-assistant/01-candidate-profile.md`
+- `.claude/skills/job-application-assistant/08-market-localization.md`
 
 Using the framework from `04-job-evaluation.md`, evaluate the job posting against the candidate's profile. If the salary lookup tool is configured, run:
 
@@ -40,8 +42,9 @@ Present the evaluation to the user with:
 1. **Skills match** - which required/preferred skills match vs. gaps
 2. **Experience match** - how work history maps to the role
 3. **Behavioral/culture match** - how behavioral profile fits the role/company culture
-4. **Salary benchmark** - salary index for the company (if available)
-5. **Overall fit score** and recommendation (strong fit / moderate fit / weak fit)
+4. **Market/logistics match** - target market, location, remote/onsite expectations, language, work authorization or clearance requirements if stated
+5. **Salary benchmark** - salary index for the company (if available)
+6. **Overall fit score** and recommendation (strong fit / moderate fit / weak fit)
 
 After presenting the evaluation, ask the user:
 > "Should I proceed with drafting the CV and cover letter for this role?"
@@ -58,14 +61,19 @@ Read only the reference files you do not yet have:
 - `.claude/skills/job-application-assistant/03-writing-style.md`
 - `.claude/skills/job-application-assistant/05-cv-templates.md`
 - `.claude/skills/job-application-assistant/06-cover-letter-templates.md`
+- `.claude/skills/job-application-assistant/08-market-localization.md` (skip if already read in Step 1)
 
 Also read the most recent existing CV and cover letter files for concrete structural reference (one of each is enough):
 - Read any existing `cv/main_*.tex` file as a LaTeX template reference
 - Read any existing `cover_letters/cover_*.tex` or `cover_letters/Cover_*.tex` file as a template reference
 
 ### CV (`cv/main_<company>.tex`)
-- Always in **English**
+- Usually in **English**, unless the market guidance or user request calls for a local-language CV
 - Follow the moderncv/banking format from `05-cv-templates.md`
+- Apply market conventions from `08-market-localization.md`:
+  - US market: write as a resume, use US English, prefer `letterpaper`, omit photo/demographics/references, and keep city/state contact only
+  - Sweden market: use CV terminology, match English/Swedish to posting expectations, include language proficiency and work authorization only if factual
+  - Denmark market: preserve the existing Danish-market rules
 - Tailor the profile statement and experience bullets to the specific role
 - Reframe skills and achievements to match job requirements
 - Keep to 2 pages
@@ -76,8 +84,9 @@ Also read the most recent existing CV and cover letter files for concrete struct
 - Use the `cover.cls` template
 - Tailor the opening paragraph to the specific role and company
 - Address to a named person if available in the posting, otherwise "Dear Hiring Manager" (or equivalent in posting language)
+- Apply local salutation, closing, tone, and compensation terminology from `08-market-localization.md`
 - Keep to approximately one page
-- Any mention of agentic coding or AI tooling must reference **Claude Code** by name
+- Any mention of agentic coding or AI tooling must reference the specific tool by name. Default to **Codex** in Codex workflows and **Claude Code** in Claude workflows; mention **Kiro CLI** only when the candidate actually used it or the claim is specifically about this review workflow.
 
 Write both files to disk. Keep the exact text of both drafts in working memory — you will pass them inline to the reviewer in Step 3 and revise them in Step 4 without re-reading.
 
@@ -85,12 +94,29 @@ Write both files to disk. Keep the exact text of both drafts in working memory �
 
 ## Step 3: REVIEWER - Research & Critique
 
-Use the **Agent tool** to spawn a `general-purpose` reviewer agent. The reviewer gets a fresh context, so pass the drafts **inline in the prompt** below (do not make the reviewer Read them). Scope the reviewer's file reads to content-critique essentials only — the reviewer does not need the LaTeX template files (`05`, `06`) to critique content, since those govern structural/LaTeX concerns the drafter already applied.
+Prefer the local Kiro reviewer delegate. The reviewer gets a fresh context, so pass the drafts **inline in the prompt** below (do not make the reviewer Read them). Scope the reviewer's context to content-critique essentials only — the reviewer does not need the LaTeX template files (`05`, `06`) to critique content, since those govern structural/LaTeX concerns the drafter already applied.
 
-Replace `<COMPANY>`, `<ROLE>`, `<INSERT_JOB_POSTING_TEXT_HERE>`, `<INSERT_CV_DRAFT_HERE>`, and `<INSERT_COVER_LETTER_DRAFT_HERE>` with actual values before dispatching.
+### 3a. Dispatch through Kiro CLI
+
+1. Replace `<COMPANY>`, `<ROLE>`, `<MARKET>`, `<INSERT_JOB_POSTING_TEXT_HERE>`, `<INSERT_CV_DRAFT_HERE>`, and `<INSERT_COVER_LETTER_DRAFT_HERE>` with actual values in the reviewer prompt below.
+2. Save the full reviewer prompt to a temporary ignored file such as `job_scraper/reviewer_prompt_<company>_<role>.md`.
+3. Run:
+
+```bash
+python tools/review_delegate.py job_scraper/reviewer_prompt_<company>_<role>.md --backend auto
+```
+
+The runner calls `kiro-cli chat --no-interactive --agent job-application-reviewer` first. If Kiro fails or is unavailable, it falls back to `claude -p`. If live tool use is needed and this is a trusted workspace, add `--kiro-trust-all-tools`; otherwise keep all job/company claims in the review as "verify before use" suggestions.
+
+If `tools/review_delegate.py` is unavailable, fall back to the Agent tool or Claude Code's built-in reviewer flow, still passing the drafts inline.
 
 ```
 You are a hiring manager proxy reviewing a job application. Your job is to make the application as targeted and compelling as possible.
+
+## Market Context
+
+Target market: <MARKET>
+Apply the market-specific expectations from `08-market-localization.md` for search/source interpretation, resume/CV conventions, cover-letter tone, salutation, closing, language, compensation cadence, and logistics risk.
 
 ## Your Tasks
 
@@ -107,6 +133,7 @@ Read these four files — and only these — to ground your critique:
 - `.claude/skills/job-application-assistant/02-behavioral-profile.md` — use this specifically to check whether the cover letter's voice matches the candidate's natural register. A "Collaborator" PI profile, for example, should not be given a combative, solo-hero tone; a "Persuader" profile should not be given over-hedged, apologetic phrasing.
 - `.claude/skills/job-application-assistant/03-writing-style.md`
 - `.claude/skills/job-application-assistant/04-job-evaluation.md`
+- `.claude/skills/job-application-assistant/08-market-localization.md`
 
 Do NOT read `05-cv-templates.md` or `06-cover-letter-templates.md` — those govern LaTeX structure the drafter already applied and are not needed for content critique.
 
@@ -145,6 +172,7 @@ Only use this format when you can quote the exact `old_string` from the drafts a
 **Part B — Narrative suggestions (for judgment calls that are not mechanical edits):**
 Prose suggestions grouped by category. Produce each category even if your finding is "no issues" — silence on a category can be mistaken for skipping it.
 - **Missed keywords/requirements** — what to add and roughly where, if it cannot be expressed as a clean string replacement
+- **Market-specific positioning** — US/Sweden/Denmark/local document conventions, work authorization or language risks, compensation cadence, and search/channel assumptions that should affect the application
 - **Company/department-specific angles** — connections between experience and the company's strategic priorities, based on your research
 - **Action-oriented reframing** — identify passive, generic, or low-energy statements and suggest action-oriented rewrites. Use this category especially for structural weakness that doesn't fit a single-sentence swap (e.g., "the whole opening paragraph reads as passive — restructure around your single strongest match to the posting").
 - **Tone and style issues** — check against `03-writing-style.md` AND `02-behavioral-profile.md`. Flag any issues with tone, formality, or voice (cliches, hedging, over-humility, inconsistent register), and specifically flag any mismatch between the letter's voice and the candidate's natural register as described in the behavioral profile.
@@ -165,6 +193,7 @@ Once the reviewer agent returns its feedback:
 1. **Apply Part A (structured edits) directly with the Edit tool.** Do NOT re-read the draft files — you already have them in context from Step 2, and the reviewer's `old_string` values were quoted from that same text. For each edit in the JSON array, call `Edit` with the given `file`, `old_string`, and `new_string`. Skip any whose rationale would require fabricating content.
 2. **Apply Part B (narrative suggestions)** using judgment. These need interpretation, not mechanical replacement. Walk through every Part B category the reviewer returned and address it:
    - **Missed keywords/requirements:** add the keyword or capability where it fits naturally in the CV or cover letter. Prefer the experience bullets (concrete evidence) over the profile statement (abstract claim).
+   - **Market-specific positioning:** apply local conventions from `08-market-localization.md`. Do not add sensitive personal details, work authorization, or language fluency unless already present in the candidate profile.
    - **Company/department-specific angles:** weave the reviewer's research into the cover letter opening or motivation paragraph. Verify every company claim via WebFetch/WebSearch before including it — do not trust reviewer research at face value.
    - **Action-oriented reframing:** rewrite passive or generic phrasing (CV profile statement, cover letter opening, bullet leads). Structural weakness that the reviewer flagged without a clean JSON edit lives here.
    - **Tone and style issues:** apply the writing-style-guide fixes (no em-dashes, no cliches, no apologetic hedging, consistent first-person active voice).

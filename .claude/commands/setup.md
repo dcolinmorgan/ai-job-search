@@ -309,11 +309,13 @@ For each reference:
 This section generates the search queries that power `/scrape`. Use the information from Sections 1, 4, and 7 to build targeted queries.
 
 Ask about:
+- **Target markets:** "Which markets should I search in: United States, Sweden, Denmark, or another market?" Accept multiple markets and record the priority order. If the user says US or Sweden, read `.claude/skills/job-application-assistant/08-market-localization.md` and use those market conventions in search, CV, and cover-letter guidance.
 - **Role titles to search for:** "What job titles should I search for? For example: Data Scientist, ML Engineer, Geophysicist." Collect 3-8 specific titles.
+- **Localized titles:** For Sweden, ask whether to include Swedish and English title variants. For the US, ask whether to include title variants like "Engineer", "Developer", "Scientist", "Analyst", "Consultant", or sector-specific titles.
 - **Key skills as search terms:** "Which of your skills are most likely to appear in job postings?" Pick 3-5 that are distinctive and searchable.
 - **Target companies (optional):** "Are there specific companies you'd like to monitor for openings?"
-- **Geographic scope:** "Which cities or regions should I search in? How far are you willing to commute?" Use this to define the location filter tiers (ideal, acceptable, borderline, too far).
-- **Job portals:** "The framework includes tools for Danish job portals (Jobindex, Jobbank, Jobdanmark, Jobnet). Are these the right ones for you, or do you use other sites?" Note: if the user is outside Denmark, acknowledge that the built-in CLI tools are Denmark-specific and suggest they can add their own portal integrations or rely on LinkedIn/Google site-searches.
+- **Geographic scope:** "Which cities, states, regions, or remote constraints should I search in? How far are you willing to commute?" Use this to define the location filter tiers (ideal, acceptable, borderline, too far).
+- **Job portals:** "Which portals should I use for each market?" Suggest the built-in Danish portals for Denmark, LinkedIn/Indeed/USAJOBS/company ATS searches for the US, and Arbetsformedlingen/Platsbanken, LinkedIn, Indeed Sweden, The Hub, and company career pages for Sweden. Note that the built-in TypeScript CLI tools are Denmark-specific; US and Sweden searches use WebSearch/site queries unless local portal integrations are added.
 
 **Important:** Also suggest role types the user may not have considered, based on their skill profile. For example:
 - If they have strong Python + domain expertise: "Have you considered roles like 'Technical Consultant' or 'Solutions Engineer' in your domain?"
@@ -356,10 +358,12 @@ Replace placeholder personal data with their actual name, contact info, and add 
 
 ### 8. Generate `.claude/skills/job-scraper/search-queries.md`
 Replace all placeholder tokens in the search queries file with the user's actual information from Section 9 (or the equivalent follow-up questions in Path A's Step A7):
+- Fill in target markets and market priority order (`us`, `sweden`, `denmark`, `other`)
 - Replace `[YOUR_PRIMARY_ROLE_TYPE]`, `[YOUR_PRIMARY_JOB_TITLE]`, etc. with actual role titles
 - Replace `[YOUR_KEY_SKILL]`, `[YOUR_DOMAIN_KEYWORD_1]`, etc. with actual skills and domain terms
-- Replace `[YOUR_CITY]`, `[YOUR_COUNTRY]`, `[YOUR_REGION]` with actual location
+- Replace `[YOUR_CITY]`, `[YOUR_STATE]`, `[YOUR_COUNTRY]`, `[YOUR_REGION]` with actual location
 - Fill in the location filter tiers (ideal, acceptable, borderline, too far) based on commute constraints
+- Add market-specific query blocks from `08-market-localization.md` for each target market, including localized Swedish/English title variants when relevant
 - Organize queries into priority categories matching the user's career direction:
   - Priority 1: Their strongest/most desired role direction
   - Priority 2: Their domain expertise
